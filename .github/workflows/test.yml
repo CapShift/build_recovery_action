@@ -77,17 +77,15 @@ jobs:
         cd ${GITHUB_WORKSPACE}/workspace/android
         git clone ${{ github.event.inputs.DEVICE_TREE }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
         
-    - name: Building recovery
+    - name: Building debugfs_static-host
       run: |
         cd ${GITHUB_WORKSPACE}/workspace/android
         . build/envsetup.sh
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng
-        mka ${{ github.event.inputs.MAKEWHAT }}image -j4
+        build/soong/soong_ui.bash --make-mode deapexer debugfs_static-host
  
-    - name: Upload to Release...
-      uses: ncipollo/release-action@v1.8.0
+    - name: Upload darwin-x86
+      uses: actions/upload-artifact@v3
       with:
-        artifacts: workspace/android/out/host/Darwin/x86_64/debugfs_static
-        name: debugfs_static
-        tag: debugfs_static_${{ env.BUILD_TIME }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        name: darwin-x86
+        path: workspace/android/out/host/darwin-x86/*
